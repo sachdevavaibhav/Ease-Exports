@@ -1,55 +1,58 @@
 const express = require('express')
 const router = express.Router({mergeParams:true})
+const Client = require('../models/client')
 const User = require('../models/user')
+const catchAsync = require('../utils/catchAsync')
 
-/*
-- get user/:id/product/:productId
-- post user/:id/product/
-- patch user/:id/product/:productId
-- delete user/:id/product/:productId
-*/ 
-
-router.get('/', async (req, res) => {
+router.get('/', catchAsync(async (req, res) => {
     // return all clients
-    const {id} = req.params
-    const user = await User.findById(id)
-    res.status(200).json(user)
-})
+    const client = await Client.find()
+    res.status(200).json(client)
+}))
 
-router.get('/:clientId', async (req, res) => {
+router.get('/:clientId', catchAsync(async (req, res) => {
     // return specific client
-    const {id} = req.params
-    const user = await User.findById(id)
-    res.status(200).json(user)
-})
+    const {clientId} = req.params
+    const client = await User.findById(clientId)
+    res.status(200).json(client)
+}))
 
-router.post('/', async (req, res) => {
+router.post('/', catchAsync(async (req, res) => {
     // create client
-    const userDetails = req.body
-    const newUser = new User(userDetails)
-    await newUser.save()
-    res.status(200).json(newUser)
-})
+    const clientDetails = req.body
+    const newClient = new Client(clientDetails)
+    const user = await User.findById(id).populate('clients')
+    user.clients.push(newClient)
+    await newClient.save()
+    await user.save()
+    res.status(200).json(newClient)
+}))
 
-router.patch('/:clientId', async (req, res) => {
-    // update client
-    const {id} = req.params
-    const details = req.body
-    const user = await User.findByIdAndUpdate(id, details)
-    res.status(200).json({
-        message: 'Updated',
-        user
-    })
-})
+// router.patch('/:clientId', catchAsync(async (req, res) => {
+//     // update client
+//     const {id} = req.params
+//     const details = req.body
+//     const user = await User.findByIdAndUpdate(id, details)
+//     res.status(200).json({
+//         message: 'Updated',
+//         user
+//     })
+// }))
 
-router.delete('/:clientId', async (req, res) => {
+router.delete('/:clientId', catchAsync(async (req, res) => {
     // delete client
-    const {id} = req.params
-    const user = await User.findByIdAndDelete(id)
+    const {clientId} = req.params
+    const client = await Client.findByIdAndDelete(clientId)
+    if (client) {
     res.status(200).json({
-        message: "user deleted successfully"
-    })
-})
+        message: "Client deleted successfully",
+        client
+    })} else {
+        res.status(404).json({
+            message: "Client not found"
+        })
+    }
+}))
 
 
 module.exports = router

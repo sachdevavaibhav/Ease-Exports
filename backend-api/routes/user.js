@@ -9,18 +9,22 @@ const catchAsync = require('../utils/catchAsync')
 
 router.get('/', catchAsync(async (req, res) => {
     const user = await User.find()
+                           .populate('products')
+                           .populate('clients')
     res.status(200).json(user)
-    .populate('products')
-    .populate('clients')
 }))
 
 router.get('/:id', catchAsync(async (req, res) => {
     const {id} = req.params
     const user = await User.findById(id)
-    .populate('products')
-    .populate('clients')
-    if (!user) return res.status(404).json({message: "User does not exist"})
-    res.status(200).json(user)
+                           .populate('products')
+                           .populate('clients')
+    if (user) {
+        res.status(200).json(user)
+    }
+    else {
+        res.status(404).json({message: "User does not exist"})
+    }
 }))
 
 router.post('/', catchAsync(async (req, res) => {
@@ -43,9 +47,14 @@ router.post('/', catchAsync(async (req, res) => {
 router.delete('/:id', catchAsync(async (req, res) => {
     const {id} = req.params
     const user = await User.findByIdAndDelete(id)
+    if (user) {
     res.status(200).json({
-        message: "user deleted successfully"
-    })
+        message: "User deleted successfully"
+    })} else {
+        res.status(404).json({
+            message: "User not found"
+        })
+    }
 }))
 
 module.exports = router
