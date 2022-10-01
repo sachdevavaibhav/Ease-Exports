@@ -11,14 +11,13 @@ const productSchema = new Schema({
         required: true
     },
     units: {
-        type: Number,
+        type: String,
         required: true
     },
-    rate: {
+    price: {
         type: Number,
         required: true
-    },
-    company: Object
+    }
 })
 
 const Product = mongoose.model('Product', productSchema)

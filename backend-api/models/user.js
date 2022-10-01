@@ -4,20 +4,21 @@ const Schema = mongoose.Schema
 const userSchema = new Schema({
     username: {
         type: String,
-        required: true,
-        lowercase: true
+        required: false,
+        lowercase: true,
+        unique:true
     },
     password: {
         type: String
     },
     gst: {
         type: String,
-        required: true,
+        required: false,
         uppercase: true 
     },
     iec: {
         type: String,
-        required: true,
+        required: false,
         uppercase: true
     },
     lut: {
@@ -33,25 +34,25 @@ const userSchema = new Schema({
     }],
     phone: {
         type: Number,
-        required: true,
+        required: false,
     },
     email: {
         type: String,
-        required: true,
+        required: false,
         lowercase: true
     },
     companyName: {
         type: String,
-        required: true
+        required: false
     },
     bankDetail: [{
         bankName: String,
         accountNumber: Number,
-        ifsc: Number,
+        ifsc: String,
         branch: String
     }],
-    products: Object,
-    clients: Object
+    products: [{type:mongoose.Schema.Types.ObjectId, ref: 'Product'}],
+    clients: [{type:mongoose.Schema.Types.ObjectId, ref: 'Client'}]
 })
 
 const User = mongoose.model('User', userSchema)
