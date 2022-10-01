@@ -42,11 +42,18 @@ router.post('/', catchAsync(async (req, res) => {
 
 router.delete('/:productId', catchAsync(async (req, res) => {
     // delete product
-    const {id} = req.params
-    const product = await User.findByIdAndDelete(id)
+    const {productId} = req.params
+    const product = await Product.findByIdAndDelete(productId)
+    if (product) {
     res.status(200).json({
-        message: "user deleted successfully"
+        message: "Product deleted successfully",
+        product
     })
+    } else {
+        res.status(404).json({
+            message: "Product not found"
+        })
+    }
 }))
 
 
