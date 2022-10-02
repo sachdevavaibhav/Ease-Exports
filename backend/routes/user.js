@@ -5,20 +5,21 @@ Need to implement update functionality and figure out how to store invoice data 
 const express = require('express')
 const router = express.Router()
 const User = require('../models/user')
+const Exporter = require('../models/exporter');
 const catchAsync = require('../utils/catchAsync')
 
 router.get('/', catchAsync(async (req, res) => {
     const user = await User.find()
-                           .populate('products')
-                           .populate('clients')
+                           .populate('exporter')
+                        //    .populate('clients')
     res.status(200).json(user)
 }))
 
 router.get('/:id', catchAsync(async (req, res) => {
     const {id} = req.params
     const user = await User.findById(id)
-                           .populate('products')
-                           .populate('clients')
+                           .populate('exporter')
+                        //    .populate('clients')
     if (user) {
         res.status(200).json(user)
     }
@@ -27,11 +28,12 @@ router.get('/:id', catchAsync(async (req, res) => {
     }
 }))
 
-router.post('/', catchAsync(async (req, res) => {
-    const userDetails = req.body
-    const newUser = new User(userDetails)
-    await newUser.save()
-    res.status(200).json(newUser)
+
+router.post('/exporter', catchAsync(async (req, res) => {
+    const exporterDetails = req.body
+    const exporter = new Exporter({...exporterDetails, });
+    await exporter.save()
+    res.status(200).json(exporter)
 }))
 
 // router.patch('/:id', catchAsync(async (req, res) => {
