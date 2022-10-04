@@ -2,19 +2,17 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const userSchema = new Schema({
-    username: {
+    email: {
         type: String,
         required: false,
-        lowercase: true,
-        unique:true
+        unique:true,
+        match: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
     },
-    password: {
-        type: String
+    hashedPassword: {
+        type: String,
+        required: true
     },
-    exporter: {
-        type:mongoose.Schema.Types.ObjectId,
-        ref: 'Exporter'
-    }
+    exporter: {type: mongoose.Schema.Types.ObjectId, ref: 'Exporter'}
 })
 
 const User = mongoose.model('User', userSchema)

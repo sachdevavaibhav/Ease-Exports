@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const userRoutes = require('./routes/user')
 
-const authRouter = require('./routes/auth')
+const exporterRoutes = require('./routes/exporter')
 
 const productRoutes = require('./routes/product')
 const clientRoutes = require('./routes/client')
@@ -13,7 +13,6 @@ const myAuthorizer = require('./utils/authorizer');
 
 const User = require('./models/user');
 
-// const port = 3000
 // connect to the database
 async function main() {
     await mongoose.connect('mongodb+srv://private_application:SbfvtOfvJyjZFoYy@cluster0.i6eur.mongodb.net/?retryWrites=true&w=majority')
@@ -26,55 +25,36 @@ db.on("error", console.error.bind(console, "Mongo Connection Error"))
 db.once("open", () => {
     console.log("Database Connected")
 })
+// Handle CORS error
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*') // Allow req from anywhere
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization') // Allow mentioned header in response
+  if (res.method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE')
+    return res.status(200).json({})
+  }
+  next()
+})
 
+// parse incoming request
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
 
-app.use('/auth', authRouter)
 
-app.use(async (req, res, next) => {
-  if (req.headers.authorization) {
-
-    const auth = req.headers.authorization.split(' ')[1];
-    
-    const buf = Buffer.from(auth, 'base64');
-    const text = buf.toString('ascii');
-
-    const [username, password] = text.split(':');
-
-    if (!username || !password) {
-      return res.status(401).json({ error: 'username or password is not set' })  
-    } 
-
-    const user = await User.findOne({ username });
-    if (!user) {
-      return res.status(401).json({ error: 'invalid username' })  
-    }
-
-    if (user.password.toString() !== password.toString()){
-      return res.status(401).json({ error: 'invalid password' })
-    }  
-
-    req.user = user;
-
-  } else {
-    return res.status(401).json({ error: 'no auth header set' })
-  }
-
-  next();
-
-});
-
-app.use('/user', userRoutes)
+// setting up routes
+app.use('', userRoutes)
+app.use('/:id/exporter', exporterRoutes)
 app.use('/user/:id/products', productRoutes)
 app.use('/user/:id/clients', clientRoutes)
 
+// Handle 404 not found
 app.use((req, res, next) => {
   const error = new Error('Not Found!')
   error.status = 404
   next(error)
 })
 
+// Handle all errors
 app.use((error, req, res, next) => {
   res.status(error.status || 500)
   res.json({

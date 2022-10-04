@@ -7,56 +7,38 @@ const router = express.Router()
 const User = require('../models/user')
 const Exporter = require('../models/exporter');
 const catchAsync = require('../utils/catchAsync')
+const bcrypt = require('bcrypt')
 
-router.get('/', catchAsync(async (req, res) => {
-    const user = await User.find()
-                           .populate('exporter')
-                        //    .populate('clients')
-    res.status(200).json(user)
-}))
-
-router.get('/:id', catchAsync(async (req, res) => {
-    const {id} = req.params
-    const user = await User.findById(id)
-                           .populate('exporter')
-                        //    .populate('clients')
-    if (user) {
-        res.status(200).json(user)
+router.post('/signup', catchAsync(async (req, res) => {
+    const {email, password} = req.body
+    if (!(email && password)) {
+        return res.status(400).json({error:"Enter username and password"})
+    }
+    checkEmail = await User.find({email})
+    if (checkEmail.length >= 1) {
+        return res.status(400).json({message: "User already exists" })
     }
     else {
-        res.status(404).json({message: "User does not exist"})
+        const hashedPassword = bcrypt.hash(password, 10, function(err, hashedPassword) {
+            if (err) {
+                res.status(500).json({
+                    error:err
+                })
+            } 
+            else { 
+                const password = hashedPassword
+                return password
+        }
+    })
+        const user = new User({email,hashedPassword})
+        await user.save()
+        return res.status(200).json(user)
     }
 }))
 
+router.get('/signin', (req, res) => {
+    // 
+})
 
-router.post('/exporter', catchAsync(async (req, res) => {
-    const exporterDetails = req.body
-    const exporter = new Exporter({...exporterDetails, });
-    await exporter.save()
-    res.status(200).json(exporter)
-}))
-
-// router.patch('/:id', catchAsync(async (req, res) => {
-//     const {id} = req.params
-//     const details = req.body
-//     const user = await User.findByIdAndUpdate(id, details)
-//     res.status(200).json({
-//         message: 'Updated',
-//         user
-//     })
-// }))
-
-router.delete('/:id', catchAsync(async (req, res) => {
-    const {id} = req.params
-    const user = await User.findByIdAndDelete(id)
-    if (user) {
-    res.status(200).json({
-        message: "User deleted successfully"
-    })} else {
-        res.status(404).json({
-            message: "User not found"
-        })
-    }
-}))
 
 module.exports = router

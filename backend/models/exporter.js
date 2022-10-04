@@ -3,6 +3,7 @@ const Schema = mongoose.Schema
 
 const exporterSchema = new Schema({
     gst: {
+
         type: String,
         required: false,
         uppercase: true 
@@ -43,10 +44,9 @@ const exporterSchema = new Schema({
         branch: String
     }],
     products: [{type:mongoose.Schema.Types.ObjectId, ref: 'Product'}],
-    clients: [{type:mongoose.Schema.Types.ObjectId, ref: 'Client'}],
-    account: {type:mongoose.Schema.Types.ObjectId, ref: 'User'}
+    clients: [{type:mongoose.Schema.Types.ObjectId, ref: 'Client'}]
 })
 
 const Exporter = mongoose.model('Exporter', exporterSchema)
 
-module.exports = Exporter;
+module.exports = Exporter
