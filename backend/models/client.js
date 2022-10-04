@@ -34,6 +34,10 @@ const clientSchema = new Schema({
     bankName: {
         type: String,
         required: true
+    },
+    eximCode: {
+        type: String,
+        required: true
     }
 })
 

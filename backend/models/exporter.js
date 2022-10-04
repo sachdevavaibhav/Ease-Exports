@@ -2,7 +2,8 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const exporterSchema = new Schema({
-     gst: {
+    gst: {
+
         type: String,
         required: false,
         uppercase: true 

@@ -5,6 +5,7 @@ Need to implement update functionality and figure out how to store invoice data 
 const express = require('express')
 const router = express.Router()
 const User = require('../models/user')
+const Exporter = require('../models/exporter');
 const catchAsync = require('../utils/catchAsync')
 const bcrypt = require('bcrypt')
 
@@ -38,5 +39,6 @@ router.post('/signup', catchAsync(async (req, res) => {
 router.get('/signin', (req, res) => {
     // 
 })
+
 
 module.exports = router

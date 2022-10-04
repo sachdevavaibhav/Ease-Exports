@@ -3,13 +3,19 @@ const app = express()
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const userRoutes = require('./routes/user')
+
 const exporterRoutes = require('./routes/exporter')
+
 const productRoutes = require('./routes/product')
 const clientRoutes = require('./routes/client')
+const basicAuth = require('express-basic-auth');
+const myAuthorizer = require('./utils/authorizer');
+
+const User = require('./models/user');
 
 // connect to the database
 async function main() {
-    await mongoose.connect('mongodb://localhost:27017/ems')
+    await mongoose.connect('mongodb+srv://private_application:SbfvtOfvJyjZFoYy@cluster0.i6eur.mongodb.net/?retryWrites=true&w=majority')
   }
   
 main()
@@ -33,6 +39,7 @@ app.use((req, res, next) => {
 // parse incoming request
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
+
 
 // setting up routes
 app.use('', userRoutes)
