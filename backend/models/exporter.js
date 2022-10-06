@@ -27,7 +27,7 @@ const exporterSchema = new Schema({
         type: Number,
         required: false,
     },
-    email: {
+    companyEmail: {
         type: String,
         required: false,
         lowercase: true

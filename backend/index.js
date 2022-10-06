@@ -7,6 +7,7 @@ const exporterRoutes = require('./routes/exporter')
 const productRoutes = require('./routes/product')
 const clientRoutes = require('./routes/client')
 
+
 // connect to the database
 async function main() {
     await mongoose.connect('mongodb://localhost:27017/ems')
@@ -36,7 +37,7 @@ app.use(bodyParser.json())
 
 // setting up routes
 app.use('', userRoutes)
-app.use('/:id/exporter', exporterRoutes)
+app.use('/exporter', exporterRoutes)
 app.use('/user/:id/products', productRoutes)
 app.use('/user/:id/clients', clientRoutes)
 
