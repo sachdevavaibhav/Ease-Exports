@@ -7,10 +7,11 @@ const exporterRoutes = require('./routes/exporter')
 const productRoutes = require('./routes/product')
 const clientRoutes = require('./routes/client')
 const generateResponse = require('./utils/generateResponse')
+require('dotenv')
 
 // connect to the database
 async function main() {
-    await mongoose.connect('mongodb://localhost:27017/ems')
+    await mongoose.connect(process.env.DB_URL)
   }
   
 main()
