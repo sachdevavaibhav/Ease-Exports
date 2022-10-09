@@ -29,7 +29,7 @@ router.get('/:productId',checkAuth,catchAsync(async (req, res) => {
     }
     isProductAvailable = user.exporter.products.includes(productId)
     if (!isProductAvailable) {
-        return res.status(403).json(generateResponse(req, res, {message: "Anauthorized"}))
+        return res.status(404).json(generateResponse(req, res, {message: "Product not found"}))
     }
     const product = await Product.findById(productId)
     res.status(200).json(generateResponse(req, res, product))
@@ -66,7 +66,7 @@ router.patch('/:productId',checkAuth,catchAsync(async (req, res) => {
     }
     const isProductAvailable = user.exporter.products.includes(productId)
     if (!isProductAvailable) {
-        return res.status(403).json(generateResponse(req, res, {message: "Anauthorized"}))
+        return res.status(404).json(generateResponse(req, res, {message: "Product not found"}))
     }
     const updatedDetails = {}
     for (let prop of Object.keys(req.body)) {

@@ -11,7 +11,6 @@ router.get('/',checkAuth,catchAsync(async (req, res) => {
     const user = await User.findById(userId).populate('exporter', '_id')
     if (user.exporter) {
         const exporter = await Exporter.findById(user.exporter._id)
-                            .populate('clients')
         return res.status(200).json(generateResponse(req, res, exporter))
     }
     res.status(404).json(generateResponse(req, res, {message: "Exporter not found"}))
