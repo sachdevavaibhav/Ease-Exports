@@ -6,7 +6,7 @@ const userRoutes = require('./routes/user')
 const exporterRoutes = require('./routes/exporter')
 const productRoutes = require('./routes/product')
 const clientRoutes = require('./routes/client')
-
+const generateResponse = require('./utils/generateResponse')
 
 // connect to the database
 async function main() {
@@ -26,7 +26,7 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization') // Allow mentioned header in response
   if (res.method === 'OPTIONS') {
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE')
-    return res.status(200).json({})
+    return res.status(200).json(generateResponse(req, res, {}))
   }
   next()
 })
@@ -51,15 +51,7 @@ app.use((req, res, next) => {
 // Handle all errors
 app.use((error, req, res, next) => {
   res.status(error.status || 500)
-  res.json({
-      request: {
-        type: req.method,
-        staus: res.statusCode
-      },
-      response: {
-        message: error.message
-      }
-  })
+  res.json(generateResponse(req, res, {message: error.message}))
 })
 
 module.exports = app
