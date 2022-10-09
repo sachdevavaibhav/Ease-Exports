@@ -8,6 +8,14 @@ module.exports = (req, res, next) => {
     req.userData = decoded
     next()
     } catch(err) {
-        res.status(401).json({message:"Auth failed"})
+        res.status(401).json({
+            request: {
+                type: req.method,
+                status: res.statusCode
+            },
+            response: {
+                message: "Auth failed"
+            }
+        })
     }
 }

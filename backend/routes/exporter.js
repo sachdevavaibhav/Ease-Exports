@@ -1,7 +1,3 @@
-/*
-Need to implement update functionality and figure out how to store invoice data in user model
-*/
-
 const express = require('express')
 const router = express.Router({mergeParams:true})
 const Exporter = require('../models/exporter')
@@ -11,62 +7,112 @@ const checkAuth = require('../middleware/checkAuth')
 
 router.get('/',checkAuth ,catchAsync(async (req, res) => {
     const userId = req.userData.userId
-    const user = await User.findById(userId).populate('exporter', '_id gst')
-    const exporterId = user.exporter._id
-    if (exporterId) {
-        const exporter = await Exporter.findById(exporterId)
+    const user = await User.findById(userId).populate('exporter', '_id')
+    if (user.exporter) {
+        const exporter = await Exporter.findById(user.exporter._id)
                             .populate('products')
                             .populate('clients')
-        res.status(200).json(exporter)
+        return res.status(200).json({
+            request: {
+                type: req.method,
+                status: res.statusCode
+            },
+            response: {
+                exporter
+            }
+        })
     }
-    else {
-        res.status(404).json({message:"Exporter not found"})
-    }
-}))
+    res.status(404).json({
+        request: {
+            type: req.method,
+            status: res.statusCode
+        },
+        response: {
+            message: "Exporter not found"
+        }
+    })
 
-// router.get('/:exporterId', catchAsync(async (req, res) => {
-//     const {exporterId} = req.params
-//     const exporter = await User.findById(exporterId)
-//                            .populate('products')
-//                            .populate('clients')
-//     if (exporter) {
-//         res.status(200).json(exporter)
-//     }
-//     else {
-//         res.status(404).json({message: "Exporter does not exist"})
-//     }
-// }))
+}))
 
 router.post('/',checkAuth ,catchAsync(async (req, res) => {
     const userId = req.userData.userId
     const user = await User.findById(userId)
-    const exporterDetails = req.body
+    if (user.exporter) {
+        return res.status(403).json({
+            request: {
+                type: req.method,
+                staus: res.statusCode
+            },
+            response: {
+                message: "Exporter already exists"
+            }
+        })
+    }
+    const exporterDetails = { // validate schema using joe
+        gst: req.body.gst,
+        iec: req.body.iec,
+        lut: req.body.lut,
+        address: req.body.address,
+        phone: req.body.phone,
+        companyEmail: req.body.companyEmail,
+        bankDetail: req.body.bankDetail
+    }
     const newExporter = new Exporter(exporterDetails)
     user.exporter = newExporter
     await newExporter.save()
     await user.save()
-    res.status(200).json(newExporter)
+    res.status(200).json({
+        request: {
+            type: req.method,
+            status: res.statusCode
+        },
+        response: {message: 'Exporter created successfully'}
+    })
 }))
 
-// router.patch('/:id', catchAsync(async (req, res) => {
-//     const {id} = req.params
-//     const details = req.body
-//     const user = await User.findByIdAndUpdate(id, details)
-//     res.status(200).json({
-//         message: 'Updated',
-//         user
-//     })
-// }))
-
-router.delete('/:exporterId',checkAuth ,catchAsync(async (req, res) => {
+router.patch('/:exporterId',checkAuth,catchAsync(async (req, res) => {
     const {exporterId} = req.params
+    const updatedDetails = {}
+    for (let prop of Object.keys(req.body)) {
+        updatedDetails[`${prop}`] = req.body[`${prop}`]
+    }
+    await Exporter.findByIdAndUpdate(exporterId, updatedDetails)
+    res.status(200).json({
+        request: {
+            type: req.method,
+            status: res.statusCode
+        },
+        response: {
+            message: "Details updated successfully"
+        }
+    })
+}))
+
+router.delete('/',checkAuth ,catchAsync(async (req, res) => {
+    const userId = req.userData.userId
+    const user = await User.findById(userId).populate('exporter', '_id')
+    const exporterId = user.exporter._id
     const exporter = await Exporter.findByIdAndDelete(exporterId)
     if (exporter) {
+    user.exporter = undefined // search for how to delete all associated refs
+    user.save()
     res.status(200).json({
-        message: "Exporter deleted successfully"
+        request: {
+            type: req.method,
+            status: res.statusCode
+        },
+        response: {
+            message: "Exporter deleted successfully"
+        }
     })} else {
         res.status(404).json({
-            message: "Exporter not found"
+            request: {
+                type: req.method,
+                status: res.statusCode
+            },
+            response: {
+                message: "Exporter not found"
+            }
         })
     }
 }))
