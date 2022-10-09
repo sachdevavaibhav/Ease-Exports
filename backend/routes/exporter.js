@@ -11,7 +11,6 @@ router.get('/',checkAuth,catchAsync(async (req, res) => {
     const user = await User.findById(userId).populate('exporter', '_id')
     if (user.exporter) {
         const exporter = await Exporter.findById(user.exporter._id)
-                            .populate('products')
                             .populate('clients')
         return res.status(200).json(generateResponse(req, res, exporter))
     }
@@ -44,7 +43,7 @@ router.patch('/:exporterId',checkAuth,catchAsync(async (req, res) => {
     const {exporterId} = req.params
     const updatedDetails = {}
     for (let prop of Object.keys(req.body)) {
-        updatedDetails[`${prop}`] = req.body[`${prop}`]
+        updatedDetails[prop] = req.body[prop]
     }
     await Exporter.findByIdAndUpdate(exporterId, updatedDetails)
     res.status(200).json(generateResponse(req, res, {message: "Exporter details updated successfully"}))

@@ -10,7 +10,7 @@ const productSchema = new Schema({
         type: String,
         required: true
     },
-    units: {
+    unit: {
         type: String,
         required: true
     },

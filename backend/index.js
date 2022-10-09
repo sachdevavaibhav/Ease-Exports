@@ -38,7 +38,7 @@ app.use(bodyParser.json())
 // setting up routes
 app.use('', userRoutes)
 app.use('/exporter', exporterRoutes)
-app.use('/user/:id/products', productRoutes)
+app.use('/products', productRoutes)
 app.use('/user/:id/clients', clientRoutes)
 
 // Handle 404 not found
