@@ -1,16 +1,25 @@
-import { MantineProvider, Group} from '@mantine/core';
+import { MantineProvider} from '@mantine/core';
 import {Navbar} from './Navbar/Navbar'
-import {HeroTitle} from './Hero/HeroTitle'
-import {HeroImage} from './Hero/HeroImage'
+import { Hero } from './Hero/Hero';
+import { Login } from './Login/Login';
+import { SignUp } from './SignUp/SignUp';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route
+} from "react-router-dom";
 
 export default function App() {
   return (
     <MantineProvider withGlobalStyles withNormalizeCSS>
-      <Navbar/>
-      <Group style={{margin: '8rem 5rem'}}>
-        <HeroTitle/>
-        <HeroImage/>
-      </Group>
+      <Router>
+          <Navbar/>
+          <Routes>
+            <Route path="/" element={<Hero/>}></Route>
+            <Route path="/login" element={<Login/>}></Route>
+            <Route path="/signup" element={<SignUp/>}></Route>
+          </Routes>
+      </Router>
     </MantineProvider>
   );
 }
